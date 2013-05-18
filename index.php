@@ -47,7 +47,7 @@
 			if(!empty($_GET['reddit_name']) && !empty($_GET['reddit_feed'])) {
 
 				// Check for proper character set
-				if (preg_match('/[^a-zA-Z0-9_-]/', $_GET['reddit_name']) == false && preg_match('/[^a-z0-9]/', $_GET['reddit_feed']) == false) {
+				if(preg_match('/[^a-zA-Z0-9_-]/', $_GET['reddit_name']) == false && preg_match('/[^a-z0-9]/', $_GET['reddit_feed']) == false) {
 
 			        $ch = curl_init();
 			        curl_setopt($ch, CURLOPT_URL, 'http://www.reddit.com/user/'.$_GET['reddit_name'].'/saved.json?feed='.$_GET['reddit_feed'].'&user='.$_GET['reddit_name']); 
