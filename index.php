@@ -112,7 +112,5 @@
 		}
 	?>
 
-	<?php include('../analytics.php'); ?>
-
 </body>
 </html>
