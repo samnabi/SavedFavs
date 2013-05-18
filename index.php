@@ -26,38 +26,57 @@
 			// Twitter
 			if(!empty($_GET['twitter'])) {
 
-				require_once('codebird.php');
-				$cb = Codebird::getInstance();
-				$twitter_query = $cb->favorites_list(array('screen_name' => $_GET['twitter'], 'count' => '200'));
+				// Check for proper character set
+				if (preg_match('/[^a-zA-Z0-9_]/', $_GET['twitter']) == false) {
 
-				foreach($twitter_query as $tweet){
-					$item = '<li><p class="authorinfo clearfix"><img src="'.$tweet->user->profile_image_url.'" /><a class="username" href="https://twitter.com/'.$tweet->user->screen_name.'">@'.$tweet->user->screen_name.'</a></p><p class="tweet">'.linkify($tweet->text).'</p><a class="timestamp" href="https://twitter.com/'.$tweet->user->screen_name.'/status/'.$tweet->id_str.'">'.date('j M Y H:i',strtotime($tweet->created_at)).'</a></li>';
-					$favs_array[strtotime($tweet->created_at)] = $item;
+					$display_names['twitter'] = $_GET['twitter'];
+
+					require_once('codebird.php');
+					$cb = Codebird::getInstance();
+					$twitter_query = $cb->favorites_list(array('screen_name' => $_GET['twitter'], 'count' => '200'));
+
+					foreach($twitter_query as $tweet){
+						$item = '<li><p class="authorinfo clearfix"><img src="'.$tweet->user->profile_image_url.'" /><a class="username" href="https://twitter.com/'.$tweet->user->screen_name.'">@'.$tweet->user->screen_name.'</a></p><p class="tweet">'.linkify($tweet->text).'</p><a class="timestamp" href="https://twitter.com/'.$tweet->user->screen_name.'/status/'.$tweet->id_str.'">'.date('j M Y H:i',strtotime($tweet->created_at)).'</a></li>';
+						$favs_array[strtotime($tweet->created_at)] = $item;
+					}
+
 				}
 			}
 
 			// Reddit
 			if(!empty($_GET['reddit_name']) && !empty($_GET['reddit_feed'])) {
 
-		        $ch = curl_init();
-		        curl_setopt($ch, CURLOPT_URL, 'http://www.reddit.com/user/'.$_GET['reddit_name'].'/saved.json?feed='.$_GET['reddit_feed'].'&user='.$_GET['reddit_name']); 
-		        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
-		        $output = curl_exec($ch);
-		        curl_getinfo($ch);
-		        curl_close($ch); 
+				// Check for proper character set
+				if (preg_match('/[^a-zA-Z0-9_-]/', $_GET['reddit_name']) == false && preg_match('/[^a-z0-9]/', $_GET['reddit_feed']) == false) {
 
-				$reddit_query = json_decode($output,true);
+			        $ch = curl_init();
+			        curl_setopt($ch, CURLOPT_URL, 'http://www.reddit.com/user/'.$_GET['reddit_name'].'/saved.json?feed='.$_GET['reddit_feed'].'&user='.$_GET['reddit_name']); 
+			        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
+			        $output = curl_exec($ch);
+			        curl_getinfo($ch);
+			        curl_close($ch); 
 
-				foreach($reddit_query[data][children] as $post){
-					$item = '<li><p class="authorinfo clearfix">';
+					$reddit_query = json_decode($output,true);
 
-					if($post[data][thumbnail] != 'self' && $post[data][thumbnail] != 'default'){
-						$item .= '<img src="'.$post[data][thumbnail].'" />';
+					// Check that the query retrns a valid response
+					if($reddit_query != NULL && !isset($reddit_query['error'])) {
+
+						$display_names['reddit'] = $_GET['reddit_name'];
+
+						foreach($reddit_query[data][children] as $post){
+							$item = '<li><p class="authorinfo clearfix">';
+
+							if($post[data][thumbnail] != 'self' && $post[data][thumbnail] != 'default'){
+								$item .= '<img src="'.$post[data][thumbnail].'" />';
+							}
+
+							$item .= '<a class="username" href="http://reddit.com/r/'.$post[data][subreddit].'">/r/'.$post[data][subreddit].'</a></p><p class="tweet"><a href="'.$post[data][url].'">'.$post[data][title].'</a></p><a class="timestamp" href="http://reddit.com'.$post[data][permalink].'">'.date('j M Y H:i',$post[data][created]).'</a></li>';
+
+							$favs_array[$post[data][created]] = $item;
+						}
+
 					}
 
-					$item .= '<a class="username" href="http://reddit.com/r/'.$post[data][subreddit].'">/r/'.$post[data][subreddit].'</a></p><p class="tweet"><a href="'.$post[data][url].'">'.$post[data][title].'</a></p><a class="timestamp" href="http://reddit.com'.$post[data][permalink].'">'.date('j M Y H:i',$post[data][created]).'</a></li>';
-
-					$favs_array[$post[data][created]] = $item;
 				}
 			}
 
@@ -66,8 +85,8 @@
 			<ul class="accounts">
 				<li><a href="index.php">Back to Home</a></li>
 				<?php
-					if(!empty($_GET['twitter'])) echo '<li>Twitter: '.$_GET['twitter'].'</li>';
-					if(!empty($_GET['reddit_name'])) echo '<li>Reddit: '.$_GET['reddit_name'].'</li>';
+					if(!empty($display_names['twitter'])) echo '<li>Twitter: '.$display_names['twitter'].'</li>';
+					if(!empty($display_names['reddit'])) echo '<li>Reddit: '.$display_names['reddit'].'</li>';
 				?>
 			</ul>
 
