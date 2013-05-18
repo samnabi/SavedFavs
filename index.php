@@ -27,7 +27,7 @@
 			if(!empty($_GET['twitter'])) {
 
 				// Check for proper character set
-				if (preg_match('/[^a-zA-Z0-9_]/', $_GET['twitter']) == false) {
+				if(preg_match('/[^a-zA-Z0-9_]/', $_GET['twitter']) == false) {
 
 					$display_names['twitter'] = $_GET['twitter'];
 
@@ -40,6 +40,9 @@
 						$favs_array[strtotime($tweet->created_at)] = $item;
 					}
 
+				}
+				else {
+					$errors[] = 'Invalid Twitter username';
 				}
 			}
 
@@ -76,8 +79,28 @@
 						}
 
 					}
-
+					else {
+						$errors[] = 'Invalid Reddit URL';
+					}
 				}
+				else {
+					$errors[] = 'Invalid Reddit URL';
+				}
+			}
+
+			if(isset($errors)){
+				?>
+				<form>
+					<p>Sorry, you didn't enter some of the information correctly:</p>
+					<ul>
+						<?php
+							foreach($errors as $error){
+								echo '<li>'.$error.'</li>';
+							}
+						?>
+					</ul>
+				</form>
+				<?php
 			}
 
 			?>
