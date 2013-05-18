@@ -48,12 +48,12 @@ class Codebird
     /**
      * The OAuth consumer key of your registered app
      */
-    private static $_oauth_consumer_key = 'lDGLAu9PM6ElbVvzJRdtqw';
+    private static $_oauth_consumer_key = 'CONSUMER_KEY';
 
     /**
      * The corresponding consumer secret
      */
-    private static $_oauth_consumer_secret = 'CMX0SLtfIV3R1LhvAVhVgmOLl75TNIzdSVU3M6RA';
+    private static $_oauth_consumer_secret = 'CONSUMER_SECRET';
 
     /**
      * The API endpoint to use
@@ -73,12 +73,12 @@ class Codebird
     /**
      * The Request or access token. Used to sign requests
      */
-    private $_oauth_token = '19156606-ufXXazY8dvqPmuTHUZWN1RENbHa6jA54K7A6ICTLL';
+    private $_oauth_token = 'OAUTH_TOKEN';
 
     /**
      * The corresponding request or access token secret
      */
-    private $_oauth_token_secret = '8iIl7eUD81krBygtFL5w4aeewjoXtPXH7ULfNfeg5U';
+    private $_oauth_token_secret = 'OAUTH_TOKEN_SECRET';
 
     /**
      * The format of data to return from API calls
